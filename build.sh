@@ -1,1 +1,1 @@
-python zadanko && pdflatex --output-directory /tmp problems.tex && zathura /tmp/problems.pdf
+./__main__.py && pdflatex --output-directory /tmp problems.tex && zathura /tmp/problems.pdf

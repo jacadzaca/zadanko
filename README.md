@@ -1,25 +1,61 @@
 ## About
-This repository contains code for a python3 script ('zadanko') that is capable of generating math worksheet.
+This repository contains code for 'zadanko' - a python3 script that is capable of generating math worksheets with answers.
 
-## Instalation
+## Installation
 ```bash
 git clone https://github.com/jacadzaca/dbcpy && cd zadanko
 ```
 
-##### Adding records
-Adding a record is easy. Just pick a copy-paste the definition from [here](https://wowdev.wiki/Category:DBC_WotLK)
-into a python dictionary and define a new dataclass. See [this](https://github.com/jacadzaca/dbcpy/blob/master/dbcpy/records/item_record.py) for a
-reference implementation.
-
 ## Examples
-##### Generating a worksheet on quadratics
+##### Generate a worksheet on quadratics
 
 ```python
-def main():
-    pass
+#!/usr/bin/env python3
+import math
+import sympy
+import string
+import random
 
-if __name__ == '__main__':
-    main()
+import zadanko.quadratics
+
+from sympy.abc import x
+from dataclasses import dataclass
+from jinja2 import Environment, PackageLoader
+
+ENV = Environment(
+    loader=PackageLoader('zadanko', 'templates'),
+    trim_blocks=True,
+    lstrip_blocks=True)
+
+def main():
+    # generate diffrent kinds of quadratic equations
+    zero_solutions_quadratics = [zadanko.quadratics.generate_quadratic_zero_solutions() for i in range(10)]
+    one_solution_quadratics = [zadanko.quadratics.generate_quadratic_one_solution() for i in range(10)]
+    two_solutions_quadratics = [zadanko.quadratics.generate_quadratic_two_solutions() for i in range(6)]
+    # sort them according to 'difficulty' - the greater the sum of quadratic's coefficients, the more difficult it is
+    zero_solutions_quadratics.sort(key=zadanko.quadratics.quadratic_difficulty_comperator, reverse=True)
+    one_solution_quadratics.sort(key=zadanko.quadratics.quadratic_difficulty_comperator, reverse=True)
+    two_solutions_quadratics.sort(key=zadanko.quadratics.quadratic_difficulty_comperator, reverse=True)
+
+    # arrange the problems in random order, but try to keep the problem's difficulty incremental
+    problem_list = [zero_solutions_quadratics, one_solution_quadratics, two_solutions_quadratics]
+    random_quadratics = []
+    for i in range(len(zero_solutions_quadratics) + len(one_solution_quadratics) + len(two_solutions_quadratics)):
+        choice = random.choice(problem_list)
+        random_quadratics.append(choice.pop())
+        if not choice:
+            problem_list.remove(choice)
+
+    # generate the awnsers with sympy https://docs.sympy.org/latest/index.html
+    awnsers = (sympy.printing.latex((sympy.solvers.solveset(quadratic, domain=sympy.S.Reals))) for quadratic in random_quadratics)
+    # generate latex code
+    random_quadratics = map(sympy.printing.latex, sorted(random_quadratics, key=zadanko.quadratics.quadratic_difficulty_comperator))
+
+    #output latex code
+    latex = ENV.get_template('problems.jinja.tex').render(equations=random_quadratics, awnsers=awnsers)
+    with open('problems.tex', 'w') as f:
+        f.write(latex)
+
 ```
 
 ## Legal Note
