@@ -1,0 +1,7 @@
+*tex
+*pdf
+*aux
+*log
+**/__pycache__/*
+venv/*
+

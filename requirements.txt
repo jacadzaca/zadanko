@@ -1,0 +1,4 @@
+Jinja2==3.0.3
+MarkupSafe==2.0.1
+mpmath==1.2.1
+sympy==1.9
