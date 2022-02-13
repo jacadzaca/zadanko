@@ -48,11 +48,43 @@ def main():
 
     # generate the awnsers with sympy https://docs.sympy.org/latest/index.html
     awnsers = (sympy.printing.latex((sympy.solvers.solveset(quadratic, domain=sympy.S.Reals))) for quadratic in random_quadratics)
-    # generate latex code
+    # generate LaTeX code
     random_quadratics = map(sympy.printing.latex, sorted(random_quadratics, key=zadanko.quadratics.quadratic_difficulty_comperator))
 
     #output latex code
     latex = ENV.get_template('problems.jinja.tex').render(equations=random_quadratics, awnsers=awnsers)
+    with open('problems.tex', 'w') as f:
+        f.write(latex)
+
+```
+
+##### Generate a worksheet on differentiation
+
+```python
+#!/usr/bin/env python3
+import sympy
+
+import zadanko.elementary_functions as elementary_functions
+
+from jinja2 import Environment, PackageLoader
+
+ENV = Environment(
+    loader=PackageLoader('zadanko', 'templates'),
+    trim_blocks=True,
+    lstrip_blocks=True)
+
+def main():
+    # generate 26 elementary functions that are at most made out of three composite functions
+    random_functions = [elementary_functions.generate_elementary_function(min_compositions=1, max_compositions=3) for i in range(26)]
+    # sort them by how 'complicated' they are - the more 'composite', the later it's in the list
+    random_functions.sort(key=sympy.count_ops)
+    # differentiate and generate LaTeX code
+    awnsers = (sympy.printing.latex(function.diff()) for function in random_functions)
+    # generate LaTeX code for problem statments
+    random_functions = map(sympy.printing.latex, random_functions)
+
+    # wrtie the LaTeX code
+    latex = ENV.get_template('diffrentiation_problems.jinja.tex').render(equations=random_functions, awnsers=awnsers)
     with open('problems.tex', 'w') as f:
         f.write(latex)
 

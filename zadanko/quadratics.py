@@ -2,7 +2,7 @@ import math
 import sympy
 import random
 
-SIGN = [-1, 1]
+from zadanko import SIGN
 
 def generate_quadratic_two_solutions(max_coefficient=20):
     b = random.randint(3, max_coefficient)
