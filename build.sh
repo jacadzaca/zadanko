@@ -1,1 +1,1 @@
-./__main__.py && pdflatex --output-directory /tmp problems.tex && zathura /tmp/problems.pdf
+./__main__.py | pdflatex --jobname worksheet --output-directory /tmp && zathura /tmp/worksheet.pdf
