@@ -62,6 +62,7 @@ def main():
 
 ```python
 #!/usr/bin/env python3
+import itertools
 import sympy
 
 import zadanko.elementary_functions as elementary_functions
@@ -73,9 +74,18 @@ ENV = Environment(
     trim_blocks=True,
     lstrip_blocks=True)
 
+def take(iterable, n):
+    "Return first n items of the iterable as a list"
+    return list(itertools.islice(iterable, n))
+
 def main():
-    # generate 26 elementary functions that are at most made out of three composite functions
-    random_functions = [elementary_functions.generate_elementary_function(min_compositions=1, max_compositions=3) for i in range(26)]
+    # generate 10 elementary functions that are made out of 2 composite functions and append them to the problem list
+    random_functions = take(elementary_functions.elementary_function_generator(2), 10)
+    # generate 10 elementary functions that are at most made out of 2 composite functions and then append the multiplication of them to the problem list
+    for function, function1 in zip(take(elementary_functions.elementary_function_generator(2), 10), take(elementary_functions.elementary_function_generator(2), 10)):
+        random_functions.append(function * function1)
+    # generate 6 elementary functions that are madeout of 3 composite functions and append them to the problem list
+    random_functions += take(elementary_functions.elementary_function_generator(3), 6)
     # sort them by how 'complicated' they are - the more 'composite', the later it's in the list
     random_functions.sort(key=sympy.count_ops)
     # differentiate and generate LaTeX code
@@ -83,7 +93,7 @@ def main():
     # generate LaTeX code for problem statments
     random_functions = map(sympy.printing.latex, random_functions)
 
-    # wrtie the LaTeX code
+    # output the LaTeX code
     latex = ENV.get_template('diffrentiation_problems.jinja.tex').render(equations=random_functions, awnsers=awnsers)
     with open('problems.tex', 'w') as f:
         f.write(latex)

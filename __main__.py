@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import itertools
+
 import sympy
 
-import zadanko.quadratics
 import zadanko.elementary_functions as elementary_functions
 
 from jinja2 import Environment, PackageLoader
@@ -11,31 +12,16 @@ ENV = Environment(
     trim_blocks=True,
     lstrip_blocks=True)
 
-def main1():
-    zero_solutions_quadratics = [zadanko.quadratics.generate_quadratic_zero_solutions() for i in range(10)]
-    one_solution_quadratics = [zadanko.quadratics.generate_quadratic_one_solution() for i in range(10)]
-    two_solutions_quadratics = [zadanko.quadratics.generate_quadratic_two_solutions() for i in range(6)]
-    zero_solutions_quadratics.sort(key=zadanko.quadratics.quadratic_difficulty_comperator, reverse=True)
-    one_solution_quadratics.sort(key=zadanko.quadratics.quadratic_difficulty_comperator, reverse=True)
-    two_solutions_quadratics.sort(key=zadanko.quadratics.quadratic_difficulty_comperator, reverse=True)
-
-    problem_list = [zero_solutions_quadratics, one_solution_quadratics, two_solutions_quadratics]
-    random_quadratics = []
-    for i in range(len(zero_solutions_quadratics) + len(one_solution_quadratics) + len(two_solutions_quadratics)):
-        choice = random.choice(problem_list)
-        random_quadratics.append(choice.pop())
-        if not choice:
-            problem_list.remove(choice)
-
-    awnsers = (sympy.printing.latex((sympy.solvers.solveset(quadratic, domain=sympy.S.Reals))) for quadratic in random_quadratics)
-    random_quadratics = map(sympy.printing.latex, sorted(random_quadratics, key=zadanko.quadratics.quadratic_difficulty_comperator))
-
-    latex = ENV.get_template('problems.jinja.tex').render(equations=random_quadratics, awnsers=awnsers)
-    with open('problems.tex', 'w') as f:
-        f.write(latex)
+# https://docs.python.org/3/library/itertools.html#itertools-recipes
+def take(iterable, n):
+    "Return first n items of the iterable as a list"
+    return list(itertools.islice(iterable, n))
 
 def main():
-    random_functions = [elementary_functions.generate_elementary_function() for i in range(26)]
+    random_functions = take(elementary_functions.elementary_function_generator(2), 10)
+    for function, function1 in zip(take(elementary_functions.elementary_function_generator(2), 10), take(elementary_functions.elementary_function_generator(2), 10)):
+        random_functions.append(function * function1)
+    random_functions += take(elementary_functions.elementary_function_generator(3), 6)
     random_functions.sort(key=sympy.count_ops)
     awnsers = (sympy.printing.latex(function.diff()) for function in random_functions)
     random_functions = map(sympy.printing.latex, random_functions)
