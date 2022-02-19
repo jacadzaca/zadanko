@@ -1,0 +1,40 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{multicol}
+\usepackage[inline]{enumitem}
+\usepackage[left=10mm, right=0mm, top=15mm, bottom=15mm]{geometry}
+
+\sloppy
+\begin{document}
+\small
+\raggedright
+{% for task in tasks %}
+\begin{multicols}{2}
+\section{ {{ task.instruction }} }
+    \begin{enumerate}[label={(\roman*)}]
+        {% for problem in task.problems%}
+            \item $a_{n} = {{ problem }}$,
+        {% endfor %}
+    \end{enumerate}
+\end{multicols}
+{% endfor %}
+
+\newgeometry{margin=0mm}
+\newpage
+
+\tiny
+\begin{enumerate}
+\begin{multicols}{3}
+\setlength{\columnsep}{-10cm}
+{% for task in tasks %}
+    \item \begin{enumerate*}[label={(\roman*)}]
+        {% for awnser in task.awnsers %}
+            \item ${{ awnser }}$,
+        {% endfor %}
+    \end{enumerate*}
+{% endfor %}
+\end{multicols}
+\end{enumerate}
+\end{document}

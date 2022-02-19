@@ -44,14 +44,16 @@ def random_product(*args, repeat=1):
 def elementary_function_generator(max_compositions, functions_space=None):
     if functions_space is None:
         functions_space = itertools.chain(ELEMENTARY_FUNCTIONS, polynomial_generator(count=2))
+    else:
+        functions_space = itertools.chain(functions_space)
     generator = random_product(functions_space, repeat=max_compositions)
     return map(compose, generator)
 
-def polynomial_generator(count=5, max_order=3, min_coefficient=1, max_coefficient=5, coefficient_space=None):
+def polynomial_generator(count=5, min_order=1, max_order=3, min_coefficient=1, max_coefficient=5, coefficient_space=None):
     if coefficient_space is None:
         coefficient_space = range(min_coefficient, max_coefficient + 1)
-    order = random.randint(1, max_order)
     for i in range(count):
+        order = random.randint(min_order, max_order)
         polynomial = []
         for i in range(order, -1, -1):
             cofficient = random.choice(SIGN) * random.choice(coefficient_space)

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 from setuptools import setup, find_packages
 
 with open('README.md') as f:
@@ -14,5 +15,6 @@ setup(
     author_email='vitouejj@gmail.com',
     url='https://github.com/jacadzaca/zadanko',
     license='GPL3',
-    packages=find_packages(exclude=('tests', 'docs', 'venv'))
+    packages=find_packages(exclude=('tests', 'docs', 'venv')),
+    package_data={'zadanko': [os.path.join('templates/', path) for path in os.listdir('zadanko/templates')]},
 )
