@@ -1,1 +1,2 @@
-./__main__.py | pdflatex --jobname worksheet --output-directory /tmp && zathura /tmp/worksheet.pdf
+# pipe LaTeX into this
+pdflatex --jobname worksheet --output-directory /tmp && zathura /tmp/worksheet.pdf << /dev/stdin
